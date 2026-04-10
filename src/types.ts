@@ -14,6 +14,7 @@ export interface LLMRequest {
   temperature?: number
   maxTokens?: number
   stream?: boolean
+  format?: 'json'
   extra?: Record<string, unknown>
 }
 

@@ -89,6 +89,7 @@ export class OpenAICompatibleProvider implements LLMProvider {
       ...(isChat ? { messages: req.messages } : { prompt: req.prompt }),
       ...(typeof req.temperature === 'number' ? { temperature: req.temperature } : {}),
       ...(typeof req.maxTokens === 'number' ? { max_tokens: req.maxTokens } : {}),
+      ...this.mapFormat(req.format),
       ...req.extra,
       stream: false,
     }
@@ -118,6 +119,7 @@ export class OpenAICompatibleProvider implements LLMProvider {
       ...(isChat ? { messages: req.messages } : { prompt: req.prompt }),
       ...(typeof req.temperature === 'number' ? { temperature: req.temperature } : {}),
       ...(typeof req.maxTokens === 'number' ? { max_tokens: req.maxTokens } : {}),
+      ...this.mapFormat(req.format),
       ...req.extra,
       stream: true,
     }
@@ -155,5 +157,15 @@ export class OpenAICompatibleProvider implements LLMProvider {
       return {}
     }
     return { Authorization: `Bearer ${this.apiKey}` }
+  }
+
+  private mapFormat(format: LLMRequest['format']): Record<string, unknown> {
+    if (typeof format === 'undefined') {
+      return {}
+    }
+    if (format === 'json') {
+      return { response_format: { type: 'json_object' } }
+    }
+    return { response_format: format }
   }
 }

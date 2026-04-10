@@ -68,6 +68,7 @@ export class OllamaProvider implements LLMProvider {
         messages: req.messages,
         stream: false,
         ...(typeof req.think === 'boolean' ? { think: req.think } : {}),
+        ...(typeof req.format !== 'undefined' ? { format: req.format } : {}),
         options: this.mapOptions(req),
       }
       const raw = await postJson<OllamaChatResponse>(`${this.baseURL}/api/chat`, payload)
@@ -86,6 +87,7 @@ export class OllamaProvider implements LLMProvider {
       prompt: req.prompt || this.messagesToPrompt(req.messages || []),
       stream: false,
       ...(typeof req.think === 'boolean' ? { think: req.think } : {}),
+      ...(typeof req.format !== 'undefined' ? { format: req.format } : {}),
       options: this.mapOptions(req),
     }
     const raw = await postJson<OllamaGenerateResponse>(`${this.baseURL}/api/generate`, payload)
@@ -107,6 +109,7 @@ export class OllamaProvider implements LLMProvider {
           messages: req.messages,
           stream: true,
           ...(typeof req.think === 'boolean' ? { think: req.think } : {}),
+          ...(typeof req.format !== 'undefined' ? { format: req.format } : {}),
           options: this.mapOptions(req),
         }
       : {
@@ -114,6 +117,7 @@ export class OllamaProvider implements LLMProvider {
           prompt: req.prompt || this.messagesToPrompt(req.messages || []),
           stream: true,
           ...(typeof req.think === 'boolean' ? { think: req.think } : {}),
+          ...(typeof req.format !== 'undefined' ? { format: req.format } : {}),
           options: this.mapOptions(req),
         }
 
@@ -140,10 +144,13 @@ export class OllamaProvider implements LLMProvider {
   }
 
   private mapOptions(req: LLMRequest): Record<string, unknown> {
+    const extra = { ...req.extra } as Record<string, unknown>
+    delete extra.format
+
     return {
       ...(typeof req.temperature === 'number' ? { temperature: req.temperature } : {}),
       ...(typeof req.maxTokens === 'number' ? { num_predict: req.maxTokens } : {}),
-      ...req.extra,
+      ...extra,
     }
   }
 
