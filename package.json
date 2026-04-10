@@ -1,0 +1,86 @@
+{
+  "name": "llm-local",
+  "version": "0.0.0",
+  "description": "A lightweight local LLM layer with a CLI and unified provider API.",
+  "keywords": [
+    "ai",
+    "cli",
+    "llm",
+    "lm-studio",
+    "local-llm",
+    "ollama",
+    "openai-compatible",
+    "typescript"
+  ],
+  "bin": {
+    "llm": "./bin/llm.js"
+  },
+  "files": [
+    "dist",
+    "bin"
+  ],
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rslib",
+    "dev": "rslib --watch",
+    "prepare": "husky",
+    "release": "release-it --only-version"
+  },
+  "dependencies": {
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.5.0",
+    "@commitlint/config-conventional": "^20.5.0",
+    "@release-it/conventional-changelog": "^10.0.6",
+    "@rslib/core": "^0.21.0",
+    "@types/node": "^24.12.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "oxfmt": "^0.44.0",
+    "oxlint": "^1.59.0",
+    "release-it": "^19.2.4",
+    "typescript": "^6.0.2"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,mjs,cjs}": "oxlint --fix",
+    "*": "oxfmt --no-error-on-unmatched-pattern"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "release-it": {
+    "git": {
+      "commitMessage": "chore: release v${version}"
+    },
+    "github": {
+      "release": true,
+      "releaseName": "v${version}",
+      "web": true
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": "angular",
+        "infile": "CHANGELOG.md",
+        "ignoreRecommendedBump": true
+      }
+    },
+    "hooks": {
+      "before:init": [
+        "pnpm run build"
+      ]
+    }
+  }
+}
