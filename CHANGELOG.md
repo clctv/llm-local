@@ -1,5 +1,7 @@
 # Changelog
 
+## [0.0.3](https://github.com/clctv/llm-local/compare/0.0.2...0.0.3) (2026-04-10)
+
 ## [0.0.2](https://github.com/clctv/llm-local/compare/0.0.1...0.0.2) (2026-04-10)
 
 ### Features
