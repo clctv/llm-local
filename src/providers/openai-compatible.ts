@@ -163,9 +163,17 @@ export class OpenAICompatibleProvider implements LLMProvider {
     if (typeof format === 'undefined') {
       return {}
     }
-    if (format === 'json') {
-      return { response_format: { type: 'json_object' } }
+    return {
+      response_format: {
+        type: 'json_schema',
+        json_schema: {
+          name: 'structured_output',
+          schema: {
+            type: 'object',
+            additionalProperties: true,
+          },
+        },
+      },
     }
-    return { response_format: format }
   }
 }

@@ -145,4 +145,4 @@ Request fields:
   - `GET /v1/models`
   - `POST /v1/chat/completions`
   - `POST /v1/completions`
-- When `format: 'json'` is set, request maps to `response_format: { type: 'json_object' }`
+- When `format: 'json'` is set, request maps to `response_format: { type: 'json_schema', json_schema: { ... } }`
