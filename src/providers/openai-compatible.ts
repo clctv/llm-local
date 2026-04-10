@@ -5,7 +5,7 @@ import type {
   LLMProvider,
   LLMProviderInitResult,
 } from '../types'
-import { postJson, readOpenAISSE } from './shared'
+import { normalizeMessagesFromRequest, postJson, readOpenAISSE } from './shared'
 
 export interface OpenAICompatibleProviderOptions {
   name: string
@@ -50,7 +50,6 @@ export class OpenAICompatibleProvider implements LLMProvider {
   public readonly name: string
   public readonly supports = {
     chat: true,
-    completion: true,
     stream: true,
   }
   protected readonly baseURL: string
@@ -82,11 +81,10 @@ export class OpenAICompatibleProvider implements LLMProvider {
   }
 
   async generate(req: LLMRequest): Promise<LLMResponse> {
-    const isChat = Array.isArray(req.messages) && req.messages.length > 0
-    const endpoint = isChat ? '/v1/chat/completions' : '/v1/completions'
+    const messages = normalizeMessagesFromRequest(req)
     const payload = {
       model: req.model,
-      ...(isChat ? { messages: req.messages } : { prompt: req.prompt }),
+      messages,
       ...(typeof req.temperature === 'number' ? { temperature: req.temperature } : {}),
       ...(typeof req.maxTokens === 'number' ? { max_tokens: req.maxTokens } : {}),
       ...this.mapFormat(req.format),
@@ -95,7 +93,7 @@ export class OpenAICompatibleProvider implements LLMProvider {
     }
 
     const raw = await postJson<OpenAITextResponse>(
-      `${this.baseURL}${endpoint}`,
+      `${this.baseURL}/v1/chat/completions`,
       payload,
       this.buildHeaders(),
     )
@@ -112,11 +110,10 @@ export class OpenAICompatibleProvider implements LLMProvider {
   }
 
   async *generateStream(req: LLMRequest): AsyncIterable<LLMStreamChunk> {
-    const isChat = Array.isArray(req.messages) && req.messages.length > 0
-    const endpoint = isChat ? '/v1/chat/completions' : '/v1/completions'
+    const messages = normalizeMessagesFromRequest(req)
     const payload = {
       model: req.model,
-      ...(isChat ? { messages: req.messages } : { prompt: req.prompt }),
+      messages,
       ...(typeof req.temperature === 'number' ? { temperature: req.temperature } : {}),
       ...(typeof req.maxTokens === 'number' ? { max_tokens: req.maxTokens } : {}),
       ...this.mapFormat(req.format),
@@ -124,7 +121,7 @@ export class OpenAICompatibleProvider implements LLMProvider {
       stream: true,
     }
 
-    const response = await fetch(`${this.baseURL}${endpoint}`, {
+    const response = await fetch(`${this.baseURL}/v1/chat/completions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -139,7 +136,7 @@ export class OpenAICompatibleProvider implements LLMProvider {
     for await (const rawChunk of readOpenAISSE(response)) {
       const chunk = rawChunk as OpenAIStreamChunkRaw
       const choice = chunk.choices?.[0]
-      const delta = isChat ? choice?.delta?.content || '' : choice?.text || ''
+      const delta = choice?.delta?.content || choice?.text || ''
       const thinking =
         choice?.delta?.reasoning ||
         choice?.delta?.reasoning_content ||

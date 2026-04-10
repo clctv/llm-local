@@ -2,22 +2,14 @@ import type {
   LLMRequest,
   LLMResponse,
   LLMStreamChunk,
-  Message,
   LLMProvider,
   LLMProviderInitResult,
 } from '../types'
-import { postJson, readNdjsonStream } from './shared'
+import { normalizeMessagesFromRequest, postJson, readNdjsonStream } from './shared'
 
 export interface OllamaProviderOptions {
   baseURL?: string
   name?: string
-}
-
-interface OllamaGenerateResponse {
-  response?: string
-  done?: boolean
-  prompt_eval_count?: number
-  eval_count?: number
 }
 
 interface OllamaChatResponse {
@@ -35,7 +27,6 @@ export class OllamaProvider implements LLMProvider {
   public readonly name: string
   public readonly supports = {
     chat: true,
-    completion: true,
     stream: true,
   }
   private readonly baseURL: string
@@ -62,37 +53,18 @@ export class OllamaProvider implements LLMProvider {
   }
 
   async generate(req: LLMRequest): Promise<LLMResponse> {
-    if (req.messages?.length) {
-      const payload = {
-        model: req.model,
-        messages: req.messages,
-        stream: false,
-        ...(typeof req.think === 'boolean' ? { think: req.think } : {}),
-        ...(typeof req.format !== 'undefined' ? { format: req.format } : {}),
-        options: this.mapOptions(req),
-      }
-      const raw = await postJson<OllamaChatResponse>(`${this.baseURL}/api/chat`, payload)
-      return {
-        text: raw.message?.content || '',
-        usage: {
-          promptTokens: raw.prompt_eval_count,
-          completionTokens: raw.eval_count,
-        },
-        raw,
-      }
-    }
-
+    const messages = normalizeMessagesFromRequest(req)
     const payload = {
       model: req.model,
-      prompt: req.prompt || this.messagesToPrompt(req.messages || []),
+      messages,
       stream: false,
       ...(typeof req.think === 'boolean' ? { think: req.think } : {}),
       ...(typeof req.format !== 'undefined' ? { format: req.format } : {}),
       options: this.mapOptions(req),
     }
-    const raw = await postJson<OllamaGenerateResponse>(`${this.baseURL}/api/generate`, payload)
+    const raw = await postJson<OllamaChatResponse>(`${this.baseURL}/api/chat`, payload)
     return {
-      text: raw.response || '',
+      text: raw.message?.content || '',
       usage: {
         promptTokens: raw.prompt_eval_count,
         completionTokens: raw.eval_count,
@@ -102,27 +74,17 @@ export class OllamaProvider implements LLMProvider {
   }
 
   async *generateStream(req: LLMRequest): AsyncIterable<LLMStreamChunk> {
-    const isChat = Array.isArray(req.messages) && req.messages.length > 0
-    const payload = isChat
-      ? {
-          model: req.model,
-          messages: req.messages,
-          stream: true,
-          ...(typeof req.think === 'boolean' ? { think: req.think } : {}),
-          ...(typeof req.format !== 'undefined' ? { format: req.format } : {}),
-          options: this.mapOptions(req),
-        }
-      : {
-          model: req.model,
-          prompt: req.prompt || this.messagesToPrompt(req.messages || []),
-          stream: true,
-          ...(typeof req.think === 'boolean' ? { think: req.think } : {}),
-          ...(typeof req.format !== 'undefined' ? { format: req.format } : {}),
-          options: this.mapOptions(req),
-        }
+    const messages = normalizeMessagesFromRequest(req)
+    const payload = {
+      model: req.model,
+      messages,
+      stream: true,
+      ...(typeof req.think === 'boolean' ? { think: req.think } : {}),
+      ...(typeof req.format !== 'undefined' ? { format: req.format } : {}),
+      options: this.mapOptions(req),
+    }
 
-    const endpoint = isChat ? '/api/chat' : '/api/generate'
-    const response = await fetch(`${this.baseURL}${endpoint}`, {
+    const response = await fetch(`${this.baseURL}/api/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -132,12 +94,14 @@ export class OllamaProvider implements LLMProvider {
     }
 
     for await (const raw of readNdjsonStream(response)) {
-      const delta = isChat
-        ? ((raw.message as { content?: string } | undefined)?.content as string | undefined) || ''
-        : (raw.response as string | undefined) || ''
-      const thinking = isChat
-        ? ((raw.message as { thinking?: string } | undefined)?.thinking as string | undefined) || ''
-        : (raw.thinking as string | undefined) || ''
+      const delta =
+        ((raw.message as { content?: string } | undefined)?.content as string | undefined) ||
+        (raw.response as string | undefined) ||
+        ''
+      const thinking =
+        ((raw.message as { thinking?: string } | undefined)?.thinking as string | undefined) ||
+        (raw.thinking as string | undefined) ||
+        ''
       const done = Boolean(raw.done)
       yield { delta, thinking, done, raw }
     }
@@ -152,10 +116,6 @@ export class OllamaProvider implements LLMProvider {
       ...(typeof req.maxTokens === 'number' ? { num_predict: req.maxTokens } : {}),
       ...extra,
     }
-  }
-
-  private messagesToPrompt(messages: Message[]): string {
-    return messages.map((item) => `${item.role}: ${item.content}`).join('\n')
   }
 
   private resolveBaseURL(input?: string): string {

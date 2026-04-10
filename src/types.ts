@@ -46,7 +46,6 @@ export interface LLMProvider {
   name: string
   supports: {
     chat: boolean
-    completion: boolean
     stream: boolean
   }
   init(): Promise<LLMProviderInitResult>

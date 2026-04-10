@@ -121,7 +121,7 @@ Core methods:
 Request fields:
 
 - `provider`, `model`
-- `prompt` or `messages` (at least one is required)
+- `prompt` or `messages` (at least one is required; `prompt` is wrapped as one `user` message)
 - `think`
 - `format` (only supports `'json'`)
 - `temperature`, `maxTokens`
@@ -135,6 +135,7 @@ Request fields:
 - Default URL: `http://127.0.0.1:11434`
 - Override host with `OLLAMA_HOST` (with or without protocol)
 - Reads `/api/tags` for model discovery
+- Uses chat endpoint `POST /api/chat` for generation and streaming
 - When `format: 'json'` is set, request uses top-level `format: 'json'`
 
 ### LM Studio
@@ -144,5 +145,4 @@ Request fields:
 - Uses OpenAI-compatible endpoints:
   - `GET /v1/models`
   - `POST /v1/chat/completions`
-  - `POST /v1/completions`
 - When `format: 'json'` is set, request maps to `response_format: { type: 'json_schema', json_schema: { ... } }`

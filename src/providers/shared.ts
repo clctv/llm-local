@@ -1,3 +1,17 @@
+import type { LLMRequest, Message } from '../types'
+
+export function normalizeMessagesFromRequest(
+  req: Pick<LLMRequest, 'messages' | 'prompt'>,
+): Message[] {
+  if (Array.isArray(req.messages) && req.messages.length > 0) {
+    return req.messages
+  }
+  if (typeof req.prompt === 'string' && req.prompt.length > 0) {
+    return [{ role: 'user', content: req.prompt }]
+  }
+  return []
+}
+
 export async function postJson<T>(
   url: string,
   body: unknown,
