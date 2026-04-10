@@ -123,6 +123,7 @@ Request fields:
 - `provider`, `model`
 - `prompt` or `messages` (at least one is required)
 - `think`
+- `format` (only supports `'json'`)
 - `temperature`, `maxTokens`
 - `extra` (provider-specific passthrough payload)
 
@@ -134,6 +135,7 @@ Request fields:
 - Default URL: `http://127.0.0.1:11434`
 - Override host with `OLLAMA_HOST` (with or without protocol)
 - Reads `/api/tags` for model discovery
+- When `format: 'json'` is set, request uses top-level `format: 'json'`
 
 ### LM Studio
 
@@ -143,3 +145,4 @@ Request fields:
   - `GET /v1/models`
   - `POST /v1/chat/completions`
   - `POST /v1/completions`
+- When `format: 'json'` is set, request maps to `response_format: { type: 'json_object' }`
