@@ -12,6 +12,7 @@
     "openai-compatible",
     "typescript"
   ],
+  "license": "MIT",
   "repository": "clctv/llm-local",
   "bin": {
     "llm": "./bin/llm.js"
