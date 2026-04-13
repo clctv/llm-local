@@ -49,13 +49,13 @@ export async function runCLI(): Promise<number> {
           printedThinking = true
           stdout.write(pc.dim(chunk.thinking))
         }
-        if (chunk.delta) {
+        if (chunk.content) {
           if (printedThinking) {
             stdout.write('\n')
             printedThinking = false
           }
-          answer += chunk.delta
-          stdout.write(chunk.delta)
+          answer += chunk.content
+          stdout.write(chunk.content)
         }
       }
 

@@ -98,7 +98,7 @@ for await (const chunk of llm.generateStream({
   think: true,
 })) {
   if (chunk.thinking) process.stdout.write(chunk.thinking)
-  if (chunk.delta) process.stdout.write(chunk.delta)
+  if (chunk.content) process.stdout.write(chunk.content)
 }
 ```
 

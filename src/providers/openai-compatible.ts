@@ -16,7 +16,16 @@ export interface OpenAICompatibleProviderOptions {
 interface OpenAITextResponse {
   choices?: Array<{
     text?: string
-    message?: { role?: string; content?: string }
+    message?: {
+      role?: string
+      content?: string
+      reasoning?: string
+      reasoning_content?: string
+      thinking?: string
+    }
+    reasoning?: string
+    reasoning_content?: string
+    thinking?: string
   }>
   usage?: {
     prompt_tokens?: number
@@ -98,9 +107,18 @@ export class OpenAICompatibleProvider implements LLMProvider {
       this.buildHeaders(),
     )
     const first = raw.choices?.[0]
-    const text = first?.message?.content || first?.text || ''
+    const content = first?.message?.content || first?.text || ''
+    const thinking =
+      first?.message?.reasoning ||
+      first?.message?.reasoning_content ||
+      first?.message?.thinking ||
+      first?.reasoning ||
+      first?.reasoning_content ||
+      first?.thinking ||
+      ''
     return {
-      text,
+      content,
+      thinking,
       usage: {
         promptTokens: raw.usage?.prompt_tokens,
         completionTokens: raw.usage?.completion_tokens,
@@ -136,7 +154,7 @@ export class OpenAICompatibleProvider implements LLMProvider {
     for await (const rawChunk of readOpenAISSE(response)) {
       const chunk = rawChunk as OpenAIStreamChunkRaw
       const choice = chunk.choices?.[0]
-      const delta = choice?.delta?.content || choice?.text || ''
+      const content = choice?.delta?.content || choice?.text || ''
       const thinking =
         choice?.delta?.reasoning ||
         choice?.delta?.reasoning_content ||
@@ -145,7 +163,7 @@ export class OpenAICompatibleProvider implements LLMProvider {
         choice?.reasoning_content ||
         choice?.thinking ||
         ''
-      yield { delta, thinking, raw: rawChunk }
+      yield { content, thinking, raw: rawChunk }
     }
   }
 

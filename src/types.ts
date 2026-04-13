@@ -24,13 +24,14 @@ export interface LLMUsage {
 }
 
 export interface LLMResponse {
-  text: string
+  content: string
+  thinking?: string
   usage?: LLMUsage
   raw?: unknown
 }
 
 export interface LLMStreamChunk {
-  delta: string
+  content: string
   thinking?: string
   done?: boolean
   raw?: unknown

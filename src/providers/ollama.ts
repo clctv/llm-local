@@ -64,7 +64,8 @@ export class OllamaProvider implements LLMProvider {
     }
     const raw = await postJson<OllamaChatResponse>(`${this.baseURL}/api/chat`, payload)
     return {
-      text: raw.message?.content || '',
+      content: raw.message?.content || '',
+      thinking: raw.message?.thinking || '',
       usage: {
         promptTokens: raw.prompt_eval_count,
         completionTokens: raw.eval_count,
@@ -94,7 +95,7 @@ export class OllamaProvider implements LLMProvider {
     }
 
     for await (const raw of readNdjsonStream(response)) {
-      const delta =
+      const content =
         ((raw.message as { content?: string } | undefined)?.content as string | undefined) ||
         (raw.response as string | undefined) ||
         ''
@@ -103,7 +104,7 @@ export class OllamaProvider implements LLMProvider {
         (raw.thinking as string | undefined) ||
         ''
       const done = Boolean(raw.done)
-      yield { delta, thinking, done, raw }
+      yield { content, thinking, done, raw }
     }
   }
 
