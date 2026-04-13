@@ -78,7 +78,7 @@ async function chooseProvider(core: LLMCore): Promise<string> {
     return providers[0]
   }
   return select({
-    message: 'Select provider',
+    message: 'Select provider:',
     choices: providers.map((item) => ({ name: item, value: item })),
   })
 }
@@ -92,7 +92,7 @@ async function chooseModel(core: LLMCore, provider: string): Promise<string> {
     return models[0]
   }
   return select({
-    message: 'Select model',
+    message: 'Select model:',
     choices: models.map((item) => ({ name: item, value: item })),
   })
 }
