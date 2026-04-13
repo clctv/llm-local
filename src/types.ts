@@ -38,7 +38,6 @@ export interface LLMStreamChunk {
 }
 
 export interface LLMProviderInitResult {
-  name: string
   available: boolean
   models?: string[]
 }

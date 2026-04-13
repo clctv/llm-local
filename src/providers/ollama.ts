@@ -40,15 +40,15 @@ export class OllamaProvider implements LLMProvider {
     try {
       const response = await fetch(`${this.baseURL}/api/tags`, { method: 'GET' })
       if (!response.ok) {
-        return { name: this.name, available: false }
+        return { available: false }
       }
       const raw = (await response.json()) as OllamaTagsResponse
       const models = (raw.models || [])
         .map((item) => item.name || item.model)
         .filter((name): name is string => typeof name === 'string' && name.length > 0)
-      return { name: this.name, available: true, models }
+      return { available: true, models }
     } catch {
-      return { name: this.name, available: false }
+      return { available: false }
     }
   }
 

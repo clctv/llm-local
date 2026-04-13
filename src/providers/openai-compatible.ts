@@ -77,15 +77,15 @@ export class OpenAICompatibleProvider implements LLMProvider {
         headers: this.buildHeaders(),
       })
       if (!response.ok) {
-        return { name: this.name, available: false }
+        return { available: false }
       }
       const raw = (await response.json()) as OpenAIModelsResponse
       const models = (raw.data || [])
         .map((item) => item.id)
         .filter((id): id is string => typeof id === 'string' && id.length > 0)
-      return { name: this.name, available: true, models }
+      return { available: true, models }
     } catch {
-      return { name: this.name, available: false }
+      return { available: false }
     }
   }
 
