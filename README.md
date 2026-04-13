@@ -56,7 +56,7 @@ Built-in commands:
 - `/think status`
 - `/exit`
 
-## Quick Start (createLLM)
+## Quick Start
 
 Use `createLLM` for the simplest programmatic flow:
 
@@ -79,7 +79,7 @@ const result = await llm.generate({
   prompt: 'Give me a short summary of local LLM routing.',
 })
 
-console.log(result.text)
+console.log(result.content)
 ```
 
 Streaming response:
@@ -146,3 +146,7 @@ Request fields:
   - `GET /v1/models`
   - `POST /v1/chat/completions`
 - When `format: 'json'` is set, request maps to `response_format: { type: 'json_schema', json_schema: { ... } }`
+
+## License
+
+MIT
