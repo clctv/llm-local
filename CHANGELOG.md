@@ -1,5 +1,15 @@
 # Changelog
 
+# [0.1.0](https://github.com/clctv/llm-local/compare/0.0.4...0.1.0) (2026-04-13)
+
+### Bug Fixes
+
+- **providers:** adjust LLMProvider return structure, remove name field ([b6ed896](https://github.com/clctv/llm-local/commit/b6ed8968e63f873871a0fd449a86528ceae877ac))
+
+### Features
+
+- **core:** unify llm response content field to content ([4856462](https://github.com/clctv/llm-local/commit/48564627276fdc330024b41588cebf853e9a7cc8))
+
 ## [0.0.4](https://github.com/clctv/llm-local/compare/0.0.3...0.0.4) (2026-04-10)
 
 ## [0.0.3](https://github.com/clctv/llm-local/compare/0.0.2...0.0.3) (2026-04-10)
