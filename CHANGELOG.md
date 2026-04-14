@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.1](https://github.com/clctv/llm-local/compare/0.1.0...0.1.1) (2026-04-14)
+
+### Features
+
+- **cli:** improve selector prompt message ([63882cc](https://github.com/clctv/llm-local/commit/63882ccf14d1b64568a2eec2c8475aea50718035))
+
 # [0.1.0](https://github.com/clctv/llm-local/compare/0.0.4...0.1.0) (2026-04-13)
 
 ### Bug Fixes
