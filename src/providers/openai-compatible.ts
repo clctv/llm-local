@@ -57,10 +57,6 @@ interface OpenAIModelsResponse {
 
 export class OpenAICompatibleProvider implements LLMProvider {
   public readonly name: string
-  public readonly supports = {
-    chat: true,
-    stream: true,
-  }
   protected readonly baseURL: string
   protected readonly apiKey?: string
 

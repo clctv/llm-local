@@ -25,10 +25,6 @@ interface OllamaTagsResponse {
 
 export class OllamaProvider implements LLMProvider {
   public readonly name: string
-  public readonly supports = {
-    chat: true,
-    stream: true,
-  }
   private readonly baseURL: string
 
   constructor(options?: OllamaProviderOptions) {

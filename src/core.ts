@@ -51,10 +51,6 @@ export class LLMCore {
     this.validateRequest(req)
     const { provider, normalizedRequest } = this.resolveProvider(req)
 
-    if (!provider.supports.stream || !provider.generateStream) {
-      throw new Error(`Provider "${provider.name}" does not support streaming`)
-    }
-
     for await (const chunk of provider.generateStream(normalizedRequest)) {
       yield chunk
     }

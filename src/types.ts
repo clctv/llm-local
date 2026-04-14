@@ -44,11 +44,7 @@ export interface LLMProviderInitResult {
 
 export interface LLMProvider {
   name: string
-  supports: {
-    chat: boolean
-    stream: boolean
-  }
   init(): Promise<LLMProviderInitResult>
   generate(req: LLMRequest): Promise<LLMResponse>
-  generateStream?(req: LLMRequest): AsyncIterable<LLMStreamChunk>
+  generateStream(req: LLMRequest): AsyncIterable<LLMStreamChunk>
 }
