@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.2](https://github.com/clctv/llm-local/compare/0.1.1...0.1.2) (2026-04-15)
+
+### Features
+
+- **lmstudio:** add model initialization and filtering ([d16aab0](https://github.com/clctv/llm-local/commit/d16aab0509021d5cea8f03d7f1638bee7d040caa))
+
 ## [0.1.1](https://github.com/clctv/llm-local/compare/0.1.0...0.1.1) (2026-04-14)
 
 ### Features
