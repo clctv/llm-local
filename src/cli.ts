@@ -1,23 +1,21 @@
 import type { Message } from './types'
 import select from './select'
-import pc from 'picocolors'
+import colors from 'picocolors'
 import { createInterface } from 'node:readline/promises'
 import { stdin, stdout } from 'node:process'
 import { LLMCore } from './core'
 import { createLLM } from './createLLM'
 
 export async function runCLI(): Promise<number> {
-  const output = (text: string) => console.log(text)
   const core = await createLLM()
-
   const provider = await chooseProvider(core)
   const model = await chooseModel(core, provider)
   const history: Message[] = []
   const rl = createInterface({ input: stdin, output: stdout })
   let thinkEnabled = true
 
-  output(`Using ${pc.green(model)} from ${pc.green(provider)}`)
-  output(`Think: ${pc.yellow('on')}  (use /think on|off|toggle|status)`)
+  console.log(`Using ${colors.green(model)} from ${colors.green(provider)}`)
+  console.log(`Think: ${colors.yellow('on')}  ${colors.dim('(use /think on|off)')}`)
 
   try {
     while (true) {
@@ -31,7 +29,7 @@ export async function runCLI(): Promise<number> {
       if (text.startsWith('/think')) {
         const next = applyThinkCommand(text, thinkEnabled)
         thinkEnabled = next.enabled
-        output(next.message)
+        console.log(next.message)
         continue
       }
 
@@ -47,7 +45,7 @@ export async function runCLI(): Promise<number> {
       })) {
         if (chunk.thinking) {
           printedThinking = true
-          stdout.write(pc.dim(chunk.thinking))
+          stdout.write(colors.dim(chunk.thinking))
         }
         if (chunk.content) {
           if (printedThinking) {
@@ -105,24 +103,20 @@ function applyThinkCommand(
   message: string
 } {
   const action = text.trim().split(/\s+/)[1]
-  if (!action || action === 'status') {
+  if (!action) {
     return {
       enabled: current,
-      message: `Think: ${current ? pc.yellow('on') : pc.gray('off')}`,
+      message: `Think: ${current ? colors.yellow('on') : colors.gray('off')}`,
     }
   }
   if (action === 'on') {
-    return { enabled: true, message: `Think: ${pc.yellow('on')}` }
+    return { enabled: true, message: `Think: ${colors.yellow('on')}` }
   }
   if (action === 'off') {
-    return { enabled: false, message: `Think: ${pc.gray('off')}` }
-  }
-  if (action === 'toggle') {
-    const enabled = !current
-    return { enabled, message: `Think: ${enabled ? pc.yellow('on') : pc.gray('off')}` }
+    return { enabled: false, message: `Think: ${colors.gray('off')}` }
   }
   return {
     enabled: current,
-    message: 'Usage: /think [on|off|toggle|status]',
+    message: 'Usage: /think [on|off]',
   }
 }
