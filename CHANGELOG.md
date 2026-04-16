@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.3](https://github.com/clctv/llm-local/compare/0.1.2...0.1.3) (2026-04-16)
+
+### Bug Fixes
+
+- **cli:** simplify think command logic and remove unused toggle option ([01ea2e7](https://github.com/clctv/llm-local/commit/01ea2e7e8a09d2ba2c72fec2e83ec968f1dc3104))
+
 ## [0.1.2](https://github.com/clctv/llm-local/compare/0.1.1...0.1.2) (2026-04-15)
 
 ### Features
