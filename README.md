@@ -46,14 +46,12 @@ CLI behavior:
 
 - Auto-selects provider and model (if only one choice is available, it is selected directly)
 - Keeps multi-turn history in session
-- `think` is enabled by default and can be toggled
+- `think` is enabled by default and can be switched with `/think on|off`
 
 Built-in commands:
 
 - `/think on`
 - `/think off`
-- `/think toggle`
-- `/think status`
 - `/exit`
 
 ## Quick Start
