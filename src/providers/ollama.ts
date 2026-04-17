@@ -56,6 +56,7 @@ export class OllamaProvider implements LLMProvider {
       stream: false,
       ...(typeof req.think === 'boolean' ? { think: req.think } : {}),
       ...(typeof req.format !== 'undefined' ? { format: req.format } : {}),
+      ...this.mapTopLevelExtra(req),
       options: this.mapOptions(req),
     }
     const raw = await postJson<OllamaChatResponse>(`${this.baseURL}/api/chat`, payload)
@@ -78,6 +79,7 @@ export class OllamaProvider implements LLMProvider {
       stream: true,
       ...(typeof req.think === 'boolean' ? { think: req.think } : {}),
       ...(typeof req.format !== 'undefined' ? { format: req.format } : {}),
+      ...this.mapTopLevelExtra(req),
       options: this.mapOptions(req),
     }
 
@@ -100,13 +102,42 @@ export class OllamaProvider implements LLMProvider {
         (raw.thinking as string | undefined) ||
         ''
       const done = Boolean(raw.done)
-      yield { content, thinking, done, raw }
+      const promptTokens =
+        typeof raw.prompt_eval_count === 'number' ? (raw.prompt_eval_count as number) : undefined
+      const completionTokens =
+        typeof raw.eval_count === 'number' ? (raw.eval_count as number) : undefined
+      const usage =
+        typeof promptTokens === 'number' || typeof completionTokens === 'number'
+          ? { promptTokens, completionTokens }
+          : undefined
+      yield { content, thinking, usage, done, raw }
     }
+  }
+
+  private mapTopLevelExtra(req: LLMRequest): Record<string, unknown> {
+    const extra = (req.extra || {}) as Record<string, unknown>
+    const out: Record<string, unknown> = {}
+
+    if (Array.isArray(extra.tools)) {
+      out.tools = extra.tools
+    }
+    if (typeof extra.keep_alive !== 'undefined') {
+      out.keep_alive = extra.keep_alive
+    }
+
+    return out
   }
 
   private mapOptions(req: LLMRequest): Record<string, unknown> {
     const extra = { ...req.extra } as Record<string, unknown>
     delete extra.format
+    delete extra.tools
+    delete extra.keep_alive
+    delete extra.stream
+    delete extra.model
+    delete extra.messages
+    delete extra.think
+    delete extra.options
 
     return {
       ...(typeof req.temperature === 'number' ? { temperature: req.temperature } : {}),
