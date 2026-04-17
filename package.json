@@ -9,7 +9,6 @@
     "lm-studio",
     "local-llm",
     "ollama",
-    "openai-compatible",
     "typescript"
   ],
   "license": "MIT",

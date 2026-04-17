@@ -33,6 +33,7 @@ export interface LLMResponse {
 export interface LLMStreamChunk {
   content: string
   thinking?: string
+  usage?: LLMUsage
   done?: boolean
   raw?: unknown
 }
