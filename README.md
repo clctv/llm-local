@@ -10,7 +10,7 @@ A lightweight local LLM layer with:
 Supported providers:
 
 - Ollama (default: `http://127.0.0.1:11434`)
-- LM Studio (default: `http://127.0.0.1:1234`, OpenAI-compatible API)
+- LM Studio (default: `http://127.0.0.1:1234`, native `/api/v1` API)
 
 ## Requirements
 
@@ -106,7 +106,7 @@ for await (const chunk of llm.generateStream({
 
 - Register custom provider instances
 - Control provider names and base URLs
-- Mix built-in and custom OpenAI-compatible providers
+- Mix built-in and custom providers
 
 Core methods:
 
@@ -140,10 +140,10 @@ Request fields:
 
 - Provider name: `lmstudio`
 - Default URL: `http://127.0.0.1:1234`
-- Uses OpenAI-compatible endpoints:
-  - `GET /v1/models`
-  - `POST /v1/chat/completions`
-- When `format: 'json'` is set, request maps to `response_format: { type: 'json_schema', json_schema: { ... } }`
+- Uses LM Studio endpoints:
+  - `GET /api/v1/models`
+  - `POST /api/v1/chat`
+- `format: 'json'` is currently ignored by this provider.
 
 ## License
 

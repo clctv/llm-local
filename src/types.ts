@@ -34,7 +34,7 @@ export interface LLMStreamChunk {
   content: string
   thinking?: string
   usage?: LLMUsage
-  done?: boolean
+  done: boolean
   raw?: unknown
 }
 

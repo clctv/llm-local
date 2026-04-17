@@ -74,7 +74,9 @@ export async function* readNdjsonStream(
   }
 }
 
-export async function* readOpenAISSE(response: Response): AsyncIterable<Record<string, unknown>> {
+export async function* readSSEJsonStream(
+  response: Response,
+): AsyncIterable<Record<string, unknown>> {
   await ensureResponseOk(response)
   if (!response.body) {
     return
@@ -96,7 +98,7 @@ export async function* readOpenAISSE(response: Response): AsyncIterable<Record<s
       buffer = parts.pop() || ''
 
       for (const part of parts) {
-        const parsed = parseOpenAISSEPart(part)
+        const parsed = parseSSEJsonPart(part)
         if (parsed) {
           yield parsed
         }
@@ -105,7 +107,7 @@ export async function* readOpenAISSE(response: Response): AsyncIterable<Record<s
 
     const remaining = buffer.trim()
     if (remaining) {
-      const parsed = parseOpenAISSEPart(remaining)
+      const parsed = parseSSEJsonPart(remaining)
       if (parsed) {
         yield parsed
       }
@@ -140,7 +142,7 @@ function parseJsonObject(input: string, label: string): Record<string, unknown> 
   }
 }
 
-function parseOpenAISSEPart(part: string): Record<string, unknown> | undefined {
+function parseSSEJsonPart(part: string): Record<string, unknown> | undefined {
   const lines = part.split('\n')
   const dataLines: string[] = []
   for (const line of lines) {
@@ -155,7 +157,7 @@ function parseOpenAISSEPart(part: string): Record<string, unknown> | undefined {
     return undefined
   }
   if (dataLines.length > 1) {
-    throw new Error('OpenAI SSE chunk has multiple data lines, expected a single JSON payload')
+    throw new Error('SSE JSON chunk has multiple data lines, expected a single JSON payload')
   }
 
   const data = dataLines[0].trim()
@@ -163,5 +165,5 @@ function parseOpenAISSEPart(part: string): Record<string, unknown> | undefined {
     return undefined
   }
 
-  return parseJsonObject(data, 'OpenAI SSE chunk')
+  return parseJsonObject(data, 'SSE JSON chunk')
 }

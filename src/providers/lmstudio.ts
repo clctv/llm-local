@@ -5,7 +5,7 @@ import type {
   LLMResponse,
   LLMStreamChunk,
 } from '../types'
-import { normalizeMessagesFromRequest, postJson, readOpenAISSE } from './shared'
+import { normalizeMessagesFromRequest, postJson, readSSEJsonStream } from './shared'
 
 export interface LMStudioProviderOptions {
   name?: string
@@ -75,7 +75,7 @@ export class LMStudioProvider implements LLMProvider {
       throw new Error(`${this.name} stream request failed with ${response.status}`)
     }
 
-    for await (const rawChunk of readOpenAISSE(response)) {
+    for await (const rawChunk of readSSEJsonStream(response)) {
       const { content, thinking, done } = this.parseStreamChunk(rawChunk)
       const endData = this.extractStreamEndData(rawChunk)
       if (!content && !thinking && !done) {
@@ -173,10 +173,10 @@ export class LMStudioProvider implements LLMProvider {
         ...(system_prompt ? { system_prompt } : {}),
       }
     }
-    return {
-      input: conversational.map((message) => ({ type: 'message', content: message.content })),
-      ...(system_prompt ? { system_prompt } : {}),
-    }
+
+    throw new Error(
+      'LM Studio history must include assistant turns for multi-turn messages. Use `prompt` for single-turn input or include assistant messages with `previous_response_id`.',
+    )
   }
 
   private getPreviousResponseId(req: LLMRequest): string | undefined {
