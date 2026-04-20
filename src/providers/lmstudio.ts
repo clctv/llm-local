@@ -4,6 +4,8 @@ import type {
   LLMRequest,
   LLMResponse,
   LLMStreamChunk,
+  LLMStreamRequest,
+  LLMNonStreamRequest,
 } from '../types'
 import { normalizeMessagesFromRequest, postJson, readSSEJsonStream } from './shared'
 
@@ -46,7 +48,16 @@ export class LMStudioProvider implements LLMProvider {
     this.baseURL = this.resolveBaseURL(options?.baseURL)
   }
 
-  async generate(req: LLMRequest): Promise<LLMResponse> {
+  generate(req: LLMStreamRequest): AsyncIterable<LLMStreamChunk>
+  generate(req: LLMNonStreamRequest): Promise<LLMResponse>
+  generate(req: LLMRequest): Promise<LLMResponse> | AsyncIterable<LLMStreamChunk> {
+    if (req.stream) {
+      return this.generateAsStream(req)
+    }
+    return this.generateAsResponse(req)
+  }
+
+  private async generateAsResponse(req: LLMRequest): Promise<LLMResponse> {
     const payload = this.buildPayload(req, false)
     const raw = await postJson<LMStudioChatResponse>(`${this.baseURL}/api/v1/chat`, payload)
     const parsed = this.parseOutput(raw.output)
@@ -62,7 +73,7 @@ export class LMStudioProvider implements LLMProvider {
     }
   }
 
-  async *generateStream(req: LLMRequest): AsyncIterable<LLMStreamChunk> {
+  private async *generateAsStream(req: LLMRequest): AsyncIterable<LLMStreamChunk> {
     const payload = this.buildPayload(req, true)
     const response = await fetch(`${this.baseURL}/api/v1/chat`, {
       method: 'POST',

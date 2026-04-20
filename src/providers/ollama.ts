@@ -4,6 +4,8 @@ import type {
   LLMStreamChunk,
   LLMProvider,
   LLMProviderInitResult,
+  LLMStreamRequest,
+  LLMNonStreamRequest,
 } from '../types'
 import { normalizeMessagesFromRequest, postJson, readNdjsonStream } from './shared'
 
@@ -46,7 +48,16 @@ export class OllamaProvider implements LLMProvider {
     }
   }
 
-  async generate(req: LLMRequest): Promise<LLMResponse> {
+  generate(req: LLMStreamRequest): AsyncIterable<LLMStreamChunk>
+  generate(req: LLMNonStreamRequest): Promise<LLMResponse>
+  generate(req: LLMRequest): Promise<LLMResponse> | AsyncIterable<LLMStreamChunk> {
+    if (req.stream) {
+      return this.generateAsStream(req)
+    }
+    return this.generateAsResponse(req)
+  }
+
+  private async generateAsResponse(req: LLMRequest): Promise<LLMResponse> {
     const payload = this.buildPayload(req, false)
     const raw = await postJson<OllamaChatResponse>(`${this.baseURL}/api/chat`, payload)
     return {
@@ -60,7 +71,7 @@ export class OllamaProvider implements LLMProvider {
     }
   }
 
-  async *generateStream(req: LLMRequest): AsyncIterable<LLMStreamChunk> {
+  private async *generateAsStream(req: LLMRequest): AsyncIterable<LLMStreamChunk> {
     const payload = this.buildPayload(req, true)
 
     const response = await fetch(`${this.baseURL}/api/chat`, {

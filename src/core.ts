@@ -1,4 +1,11 @@
-import type { LLMRequest, LLMResponse, LLMStreamChunk, LLMProvider } from './types'
+import type {
+  LLMRequest,
+  LLMResponse,
+  LLMStreamChunk,
+  LLMProvider,
+  LLMStreamRequest,
+  LLMNonStreamRequest,
+} from './types'
 
 export class LLMCore {
   private providers = new Map<string, LLMProvider>()
@@ -41,19 +48,15 @@ export class LLMCore {
     return models ? Array.from(models) : []
   }
 
-  async generate(req: LLMRequest): Promise<LLMResponse> {
+  generate(req: LLMStreamRequest): AsyncIterable<LLMStreamChunk>
+  generate(req: LLMNonStreamRequest): Promise<LLMResponse>
+  generate(req: LLMRequest): Promise<LLMResponse> | AsyncIterable<LLMStreamChunk> {
     this.validateRequest(req)
     const { provider, normalizedRequest } = this.resolveProvider(req)
-    return provider.generate(normalizedRequest)
-  }
-
-  async *generateStream(req: LLMRequest): AsyncIterable<LLMStreamChunk> {
-    this.validateRequest(req)
-    const { provider, normalizedRequest } = this.resolveProvider(req)
-
-    for await (const chunk of provider.generateStream(normalizedRequest)) {
-      yield chunk
+    if (normalizedRequest.stream) {
+      return provider.generate(normalizedRequest as LLMStreamRequest)
     }
+    return provider.generate(normalizedRequest as LLMNonStreamRequest)
   }
 
   private resolveProvider(req: LLMRequest): {

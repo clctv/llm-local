@@ -18,6 +18,9 @@ export interface LLMRequest {
   extra?: Record<string, unknown>
 }
 
+export type LLMStreamRequest = LLMRequest & { stream: true }
+export type LLMNonStreamRequest = LLMRequest & { stream?: false | undefined }
+
 export interface LLMUsage {
   promptTokens?: number
   completionTokens?: number
@@ -46,6 +49,6 @@ export interface LLMProviderInitResult {
 export interface LLMProvider {
   name: string
   init(): Promise<LLMProviderInitResult>
-  generate(req: LLMRequest): Promise<LLMResponse>
-  generateStream(req: LLMRequest): AsyncIterable<LLMStreamChunk>
+  generate(req: LLMStreamRequest): AsyncIterable<LLMStreamChunk>
+  generate(req: LLMNonStreamRequest): Promise<LLMResponse>
 }

@@ -7,9 +7,9 @@ import { LLMCore } from './core'
 import { createLLM } from './createLLM'
 
 export async function runCLI(): Promise<number> {
-  const core = await createLLM()
-  const provider = await chooseProvider(core)
-  const model = await chooseModel(core, provider)
+  const llm = await createLLM()
+  const provider = await chooseProvider(llm)
+  const model = await chooseModel(llm, provider)
   const history: Message[] = []
   const rl = createInterface({ input: stdin, output: stdout })
   let thinkEnabled = true
@@ -37,9 +37,10 @@ export async function runCLI(): Promise<number> {
       let answer = ''
       let printedThinking = false
 
-      for await (const chunk of core.generateStream({
+      for await (const chunk of llm.generate({
         provider,
         model,
+        stream: true,
         think: thinkEnabled,
         messages: history,
       })) {
@@ -67,8 +68,8 @@ export async function runCLI(): Promise<number> {
   return 0
 }
 
-async function chooseProvider(core: LLMCore): Promise<string> {
-  const providers = core.listProviders()
+async function chooseProvider(llm: LLMCore): Promise<string> {
+  const providers = llm.listProviders()
   if (providers.length === 0) {
     throw new Error('No provider available')
   }
@@ -81,8 +82,8 @@ async function chooseProvider(core: LLMCore): Promise<string> {
   })
 }
 
-async function chooseModel(core: LLMCore, provider: string): Promise<string> {
-  const models = core.listModels(provider)
+async function chooseModel(llm: LLMCore, provider: string): Promise<string> {
+  const models = llm.listModels(provider)
   if (models.length === 0) {
     throw new Error(`No models available for provider "${provider}"`)
   }

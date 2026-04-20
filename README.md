@@ -89,9 +89,10 @@ const llm = await createLLM()
 const provider = llm.listProviders()[0]
 const model = llm.listModels(provider)[0]
 
-for await (const chunk of llm.generateStream({
+for await (const chunk of llm.generate({
   provider,
   model,
+  stream: true,
   messages: [{ role: 'user', content: 'Write a one-paragraph intro about Ollama.' }],
   think: true,
 })) {
@@ -114,7 +115,6 @@ Core methods:
 - `listProviders()`
 - `listModels(provider)`
 - `generate(req)`
-- `generateStream(req)`
 
 Request fields:
 
