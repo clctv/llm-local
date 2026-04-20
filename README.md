@@ -122,7 +122,7 @@ Request fields:
 - `prompt` or `messages` (at least one is required; `prompt` is wrapped as one `user` message)
 - `think`
 - `format` (only supports `'json'`)
-- `temperature`, `maxTokens`
+- `temperature`
 - `extra` (provider-specific passthrough payload)
 
 ## Providers

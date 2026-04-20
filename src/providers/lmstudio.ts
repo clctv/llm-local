@@ -117,7 +117,6 @@ export class LMStudioProvider implements LLMProvider {
         ? { previous_response_id }
         : {}),
       ...(typeof req.temperature === 'number' ? { temperature: req.temperature } : {}),
-      ...(typeof req.maxTokens === 'number' ? { max_output_tokens: req.maxTokens } : {}),
       ...this.mapThink(req),
       ...req.extra,
       stream,

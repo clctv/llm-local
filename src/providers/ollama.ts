@@ -139,7 +139,6 @@ export class OllamaProvider implements LLMProvider {
 
     return {
       ...(typeof req.temperature === 'number' ? { temperature: req.temperature } : {}),
-      ...(typeof req.maxTokens === 'number' ? { num_predict: req.maxTokens } : {}),
       ...extra,
     }
   }

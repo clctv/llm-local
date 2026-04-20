@@ -12,7 +12,6 @@ export interface LLMRequest {
   prompt?: string
   messages?: Message[]
   temperature?: number
-  maxTokens?: number
   stream?: boolean
   format?: 'json'
   extra?: Record<string, unknown>
