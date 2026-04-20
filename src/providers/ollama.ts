@@ -20,7 +20,7 @@ interface OllamaChatResponse {
 }
 
 interface OllamaTagsResponse {
-  models?: Array<{ name?: string; model?: string }>
+  models?: Array<{ name: string }>
 }
 
 export class OllamaProvider implements LLMProvider {
@@ -39,9 +39,7 @@ export class OllamaProvider implements LLMProvider {
         return { available: false }
       }
       const raw = (await response.json()) as OllamaTagsResponse
-      const models = (raw.models || [])
-        .map((item) => item.name || item.model)
-        .filter((name): name is string => typeof name === 'string' && name.length > 0)
+      const models = (raw.models || []).map((item) => item.name)
       return { available: true, models }
     } catch {
       return { available: false }
