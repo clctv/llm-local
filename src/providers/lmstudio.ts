@@ -197,14 +197,17 @@ export class LMStudioProvider implements LLMProvider {
   }
 
   private mapThink(req: LLMRequest): Record<string, unknown> {
-    if (typeof req.think !== 'boolean') {
+    if (req.think === undefined) {
       return {}
     }
     const extra = req.extra || {}
     if (typeof extra.reasoning === 'string') {
       return {}
     }
-    return { reasoning: req.think ? 'on' : 'off' }
+    if (typeof req.think === 'boolean') {
+      return { reasoning: req.think ? 'on' : 'off' }
+    }
+    return { reasoning: req.think }
   }
 
   private parseOutput(output?: LMStudioOutputItem[]): { content: string; thinking: string } {

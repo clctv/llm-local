@@ -1,4 +1,5 @@
 export type Role = 'system' | 'user' | 'assistant'
+export type ThinkLevel = 'high' | 'medium' | 'low'
 
 export interface Message {
   role: Role
@@ -8,7 +9,7 @@ export interface Message {
 export interface LLMRequest {
   provider?: string
   model?: string
-  think?: boolean
+  think?: boolean | ThinkLevel
   prompt?: string
   messages?: Message[]
   temperature?: number

@@ -47,16 +47,7 @@ export class OllamaProvider implements LLMProvider {
   }
 
   async generate(req: LLMRequest): Promise<LLMResponse> {
-    const messages = normalizeMessagesFromRequest(req)
-    const payload = {
-      model: req.model,
-      messages,
-      stream: false,
-      ...(typeof req.think === 'boolean' ? { think: req.think } : {}),
-      ...(typeof req.format !== 'undefined' ? { format: req.format } : {}),
-      ...this.mapTopLevelExtra(req),
-      options: this.mapOptions(req),
-    }
+    const payload = this.buildPayload(req, false)
     const raw = await postJson<OllamaChatResponse>(`${this.baseURL}/api/chat`, payload)
     return {
       content: raw.message?.content || '',
@@ -70,16 +61,7 @@ export class OllamaProvider implements LLMProvider {
   }
 
   async *generateStream(req: LLMRequest): AsyncIterable<LLMStreamChunk> {
-    const messages = normalizeMessagesFromRequest(req)
-    const payload = {
-      model: req.model,
-      messages,
-      stream: true,
-      ...(typeof req.think === 'boolean' ? { think: req.think } : {}),
-      ...(typeof req.format !== 'undefined' ? { format: req.format } : {}),
-      ...this.mapTopLevelExtra(req),
-      options: this.mapOptions(req),
-    }
+    const payload = this.buildPayload(req, true)
 
     const response = await fetch(`${this.baseURL}/api/chat`, {
       method: 'POST',
@@ -112,34 +94,43 @@ export class OllamaProvider implements LLMProvider {
     }
   }
 
+  private buildPayload(req: LLMRequest, stream: boolean): Record<string, unknown> {
+    return {
+      model: req.model,
+      messages: normalizeMessagesFromRequest(req),
+      stream,
+      think: req.think,
+      format: req.format,
+      ...this.mapTopLevelExtra(req),
+      options: this.mapOptions(req),
+    }
+  }
+
   private mapTopLevelExtra(req: LLMRequest): Record<string, unknown> {
-    const extra = (req.extra || {}) as Record<string, unknown>
-    const out: Record<string, unknown> = {}
-
-    if (Array.isArray(extra.tools)) {
-      out.tools = extra.tools
+    const extra = (req.extra ?? {}) as Record<string, unknown>
+    return {
+      ...(Array.isArray(extra.tools) ? { tools: extra.tools } : {}),
+      ...(extra.keep_alive !== undefined ? { keep_alive: extra.keep_alive } : {}),
     }
-    if (typeof extra.keep_alive !== 'undefined') {
-      out.keep_alive = extra.keep_alive
-    }
-
-    return out
   }
 
   private mapOptions(req: LLMRequest): Record<string, unknown> {
-    const extra = { ...req.extra } as Record<string, unknown>
-    delete extra.format
-    delete extra.tools
-    delete extra.keep_alive
-    delete extra.stream
-    delete extra.model
-    delete extra.messages
-    delete extra.think
-    delete extra.options
+    const extra = (req.extra ?? {}) as Record<string, unknown>
+    const {
+      format: _format,
+      tools: _tools,
+      keep_alive: _keepAlive,
+      stream: _stream,
+      model: _model,
+      messages: _messages,
+      think: _think,
+      options: _options,
+      ...rest
+    } = extra
 
     return {
       ...(typeof req.temperature === 'number' ? { temperature: req.temperature } : {}),
-      ...extra,
+      ...rest,
     }
   }
 
