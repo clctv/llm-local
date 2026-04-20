@@ -1,5 +1,15 @@
 # Changelog
 
+# [0.2.0](https://github.com/clctv/llm-local/compare/0.1.3...0.2.0) (2026-04-20)
+
+### Bug Fixes
+
+- **ollama:** simplify model extraction logic ([f8ffa0e](https://github.com/clctv/llm-local/commit/f8ffa0ef7050440e4c0777e691619e5aedea8b54))
+
+### Features
+
+- **ollama:** add support for mapping top-level request extras ([c62af4e](https://github.com/clctv/llm-local/commit/c62af4ec7b3b016865ba88eab1266fa6571c090d))
+
 ## [0.1.3](https://github.com/clctv/llm-local/compare/0.1.2...0.1.3) (2026-04-16)
 
 ### Bug Fixes
