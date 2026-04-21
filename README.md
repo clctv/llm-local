@@ -112,7 +112,7 @@ llm.register(
 )
 ```
 
-Or pass `providers` to `createLLM({ providers })` to override the default provider registration.
+Alternatively, pass `providers` to `createLLM({ providers })` to override the default provider registration.
 
 ## Providers
 
