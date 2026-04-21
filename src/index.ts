@@ -1,4 +1,3 @@
-export * from './cli'
 export * from './createLLM'
 export * from './types'
 export * from './providers/lmstudio'

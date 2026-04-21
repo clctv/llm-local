@@ -11,11 +11,6 @@ Supported providers:
 - Ollama (default: `http://127.0.0.1:11434`)
 - LM Studio (default: `http://127.0.0.1:1234`)
 
-## Requirements
-
-- Node.js 18+
-- At least one local provider running (Ollama or LM Studio)
-
 ## Installation
 
 Install as a CLI:

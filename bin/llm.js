@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { runCLI } from '../dist/index.js'
+import { runCLI } from '../dist/cli.js'
 
 function isInterruptedError(error) {
   if (!(error instanceof Error)) {
