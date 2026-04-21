@@ -1,5 +1,17 @@
 # Changelog
 
+# [0.3.0](https://github.com/clctv/llm-local/compare/0.2.0...0.3.0) (2026-04-21)
+
+### Bug Fixes
+
+- **core:** remove maxTokens field from request types and providers ([ca48a2f](https://github.com/clctv/llm-local/commit/ca48a2f3daea9b68a4522cb75d64f03afa7a170a))
+- **ollama:** remove OLLAMA_HOST env var dependency ([94fe79f](https://github.com/clctv/llm-local/commit/94fe79fd37cc54d2e86b3689dcf7454ef174bd6a))
+
+### Features
+
+- **core:** add provider control via createLLM options ([f1e8a1b](https://github.com/clctv/llm-local/commit/f1e8a1b932900706a25e6ab0c4e5b89ecb2d583b))
+- **core:** unify generate API to support both streaming and non-streaming modes ([a5fb374](https://github.com/clctv/llm-local/commit/a5fb374eab283a29d2e2e8a27263ffefa5ebc355))
+
 # [0.2.0](https://github.com/clctv/llm-local/compare/0.1.3...0.2.0) (2026-04-20)
 
 ### Bug Fixes
