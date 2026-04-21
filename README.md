@@ -101,13 +101,14 @@ for await (const chunk of llm.generate({
 }
 ```
 
-## Advanced: Using LLMCore
+## Advanced: Provider Control
 
-`LLMCore` is the advanced API if you want full provider control:
+The `llm` instance returned by `createLLM()` supports advanced provider control:
 
 - Register custom provider instances
 - Control provider names and base URLs
 - Mix built-in and custom providers
+- Pass `providers` to `createLLM({ providers })` to override default provider registration
 
 Core methods:
 
