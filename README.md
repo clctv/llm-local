@@ -17,9 +17,6 @@ Supported providers:
 - Node.js 18+
 - At least one local provider running (Ollama or LM Studio)
 
-> [!NOTE]
-> Providers are detected at startup. Unavailable providers are skipped automatically.
-
 ## Installation
 
 Install as a CLI:
