@@ -10,7 +10,7 @@ A lightweight local LLM layer with:
 Supported providers:
 
 - Ollama (default: `http://127.0.0.1:11434`)
-- LM Studio (default: `http://127.0.0.1:1234`, native `/api/v1` API)
+- LM Studio (default: `http://127.0.0.1:1234`)
 
 ## Requirements
 
@@ -56,8 +56,6 @@ Built-in commands:
 
 ## Quick Start
 
-Use `createLLM` for the simplest programmatic flow:
-
 ```ts
 import { createLLM } from 'llm-local'
 
@@ -88,6 +86,7 @@ import { createLLM } from 'llm-local'
 const llm = await createLLM()
 const provider = llm.listProviders()[0]
 const model = llm.listModels(provider)[0]
+let text = ''
 
 for await (const chunk of llm.generate({
   provider,
@@ -96,8 +95,8 @@ for await (const chunk of llm.generate({
   messages: [{ role: 'user', content: 'Write a one-paragraph intro about Ollama.' }],
   think: true,
 })) {
-  if (chunk.thinking) process.stdout.write(chunk.thinking)
-  if (chunk.content) process.stdout.write(chunk.content)
+  if (chunk.thinking) text += chunk.thinking
+  if (chunk.content) text += chunk.content
 }
 ```
 
@@ -105,26 +104,19 @@ for await (const chunk of llm.generate({
 
 The `llm` instance returned by `createLLM()` supports advanced provider control:
 
-- Register custom provider instances
-- Control provider names and base URLs
-- Mix built-in and custom providers
-- Pass `providers` to `createLLM({ providers })` to override default provider registration
+```ts
+import { createLLM, OllamaProvider } from 'llm-local'
 
-Core methods:
+const llm = await createLLM()
+llm.register(
+  new OllamaProvider({
+    name: 'ollama-custom',
+    baseURL: 'http://127.0.0.1:11434',
+  }),
+)
+```
 
-- `register()`
-- `listProviders()`
-- `listModels(provider)`
-- `generate(req)`
-
-Request fields:
-
-- `provider`, `model`
-- `prompt` or `messages` (at least one is required; `prompt` is wrapped as one `user` message)
-- `think`
-- `format` (only supports `'json'`)
-- `temperature`
-- `extra` (provider-specific passthrough payload)
+Or pass `providers` to `createLLM({ providers })` to override the default provider registration.
 
 ## Providers
 
