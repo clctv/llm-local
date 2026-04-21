@@ -120,7 +120,6 @@ Alternatively, pass `providers` to `createLLM({ providers })` to override the de
 
 - Provider name: `ollama`
 - Default URL: `http://127.0.0.1:11434`
-- Override host with `OLLAMA_HOST` (with or without protocol)
 - Reads `/api/tags` for model discovery
 - Uses chat endpoint `POST /api/chat` for generation and streaming
 - When `format: 'json'` is set, request uses top-level `format: 'json'`

@@ -146,7 +146,7 @@ export class OllamaProvider implements LLMProvider {
   }
 
   private resolveBaseURL(input?: string): string {
-    const raw = (input || process.env.OLLAMA_HOST || '127.0.0.1:11434').trim()
+    const raw = (input || '127.0.0.1:11434').trim()
     const normalized = /^https?:\/\//i.test(raw) ? raw : `http://${raw}`
     const url = new URL(normalized)
     if (!url.port) {
