@@ -1,7 +1,7 @@
 {
   "name": "llm-local",
   "version": "0.2.0",
-  "description": "A lightweight local LLM layer with a CLI and unified provider API.",
+  "description": "A lightweight local LLM layer with a CLI and unified API across providers.",
   "keywords": [
     "ai",
     "cli",

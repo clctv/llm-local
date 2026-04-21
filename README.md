@@ -3,9 +3,9 @@
 A lightweight local LLM layer with:
 
 - A ready-to-use CLI (`llm`)
-- A simple programmatic entrypoint (`createLLM`)
+- A simple API for programmatic use (`createLLM`)
 - Automatic local provider discovery and model listing
-- Unified streaming output with optional reasoning/thinking chunks
+- Unified input/output across multiple local providers
 
 Supported providers:
 
